@@ -1,0 +1,12 @@
+/*neon theme and very responsive*/
+
+/*var*/
+:root{
+    --bg-1: #050213;
+    --bg-2: #0b0520;
+    --accent-a: #5be3ff;
+    --accent-b: #b46bff;
+    --muted: #aeb9e8;
+    --glass: rgba(255,255,255,0.03);
+    --panel-radius: 14px;
+}
