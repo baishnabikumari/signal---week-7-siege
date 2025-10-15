@@ -10,3 +10,37 @@
     --glass: rgba(255,255,255,0.03);
     --panel-radius: 14px;
 }
+
+*{
+    box-sizing: border-box;
+}
+html, body{
+    height:100%;
+    margin:0;
+    font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+}
+
+body{
+    background:
+    radial-gradient(800px 400px at 12% 18%, rgba(180,107,255,0.06), transparent 8%),
+    radial-gradient(700px 350px at 90% 88%, rgba(91,227,255,0.04), transparent 6%),
+    linear-gradient(180deg,var(--bg-1),var(--bg-2));
+
+    color: #e9e7ff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    padding: 18px;
+}
+
+/*layout for app*/
+.app {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    height: 100%;
+}
