@@ -29,7 +29,31 @@
             </div>
         </header>
 <!--Main part-->
-        <main class="stage"
+        <main class="stage" id="stage" role="application" aria-label="Catch the SIGNAL game">
+            <canvas id="gameCanvas" tabindex="0" aria-label="Game canvas"></canvas>
+            <div class="hud">
+                <div class="left-col">
+                    <div class="panel score-panel" aria-live="polite">
+                        <div class="label">SCORE</div>
+                        <div id="scoreValue" class="big">0</div>
+                        <div class="small muted">High: <span id="highScore">0</span></div>
+                    </div>
+                </div>
+
+                <div class="center-col">
+                    <div class="panel signal-panel">
+                        <div class="label">SIGNAL</div>
+                        <div class="signal-bar">
+                            <div id="signalFill" class="signal-fill" style="transform:scale(1)"></div>
+                        </div>
+                        <div class="small muted">Strength</div>
+                    </div>
+                </div>
+            </div>
+            <div class="bottom-info">
+                <div class="hint"></div>
+            </div>
+        </main>
     </div>
 </body>
 </html>
