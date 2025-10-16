@@ -43,3 +43,34 @@ function resizeCanvas(){
     ctx.setTransform(DPR,0,0,DPR,0,0);
 }
 window.addEventListener('resize', ()=>{resizeCanvas(); });
+
+
+// player
+const player = {
+    x: 0.5,
+    y: 0.78,
+    baseRadius: 20,
+    dx: 0,
+};
+
+let pointerDown = false;
+function toNormX(clientX){
+    const rect = canvas.getBoundingClientRect();
+    return clamp((clientX - rect.left) / rect.width, 0, 1);
+}
+
+canvas.addEventListener('pointerdown', (e) => {
+    if(pointerDown) player.x = toNormX(e.clientX);
+});
+window.addEventListener('pointermove', () => pointerDown = false);
+
+//for keyboard
+window.addEventListener('keydown', (e) => {
+    if(e.key === 'ArrowLeft' || e.key.toLowerCase()==='a') player.dx = -1;
+    if(e.key === 'ArrowRight' || e.key.toLowerCase()==='d') player.dx = 1;
+});
+window.addEventListener('keyup', (e) => {
+    if(e.key === 'ArrowLeft' || e.key === 'ArrowRight' || ['a','d'].includes(e.key.toLowerCase())) player.dx = 0;
+});
+
+//wave (pulsating signal)
