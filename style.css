@@ -146,3 +146,67 @@ canvas#gameCanvas{
     height: 100%;
 }
 
+.hud{
+    position: absolute;
+    inset: 18px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    pointer-events: none;
+}
+
+.left-col, .center-col, .right-col{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: auto;
+}
+
+.score-panel, .signal-panel{
+    background: var(--glass);
+    padding: 10px 14px;
+    border-radius: var(--panel-radius);
+    backdrop-filter: blur(6px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+}
+
+.label{
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+}
+
+.big{
+    font-size: 28px;
+    font-weight: 800;
+    color: #fff;
+    margin-top: 6px;
+}
+
+.small{
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.muted{
+    color: var(--muted);
+}
+
+.signal-bar{
+    width: 220px;
+    height: 10px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.signal-fill{
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg,var(--accent-a),var(--accent-b));
+    transform-origin: left center;
+    transform: scaleX(1);
+    transition: transform .2s linear;
+    box-shadow: 0 8px 24px rgba(180,107,255,0.08);
+}
