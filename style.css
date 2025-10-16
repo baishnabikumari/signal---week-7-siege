@@ -210,3 +210,25 @@ canvas#gameCanvas{
     transition: transform .2s linear;
     box-shadow: 0 8px 24px rgba(180,107,255,0.08);
 }
+
+/* status bar or banner*/
+.status{
+    background: linear-gradient(90deg, rbga(255,255,255,0.02), rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    padding: 8px 12px;
+    border-radius: 12px;
+    color: var(--muted);
+    box-shadow: 0 8px 30px rgba(6,6,10,0.06);
+    font-weight: 600;
+}
+
+.status.ready{
+    color: var(--muted);
+}
+
+.status.running{
+    color: #e7fff9;
+}
+
+.status.success{
+    color: var(--accent-a);
+}
