@@ -78,4 +78,50 @@ body{
     color: var(--muted);
     margin-top: 3px;
 }
+
 /*contors on the top*/
+.top-controls{
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.network-label{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.ssid-input{
+    background: transparent;
+    border: 0;
+    border-bottom: 1px dashed rgba(255,255,255,0.05);
+    color: var(--accent-a);
+    outline: none;
+    padding: 6px 8px;
+    border-radius: 6px;
+    min-width: 110px;
+}
+
+.btn{
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.06);
+    color: var(--muted);
+    padding: 8px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+.btn.primary{
+    background: linear-gradient(90deg,var(--accent-a),var(--accent-b));
+    border: 0;
+    color: #05020a;
+    box-shadow: 0 10px 30px rgba(180,107,255,0.08);
+}
+
+.btn.small{
+    padding: 6px;
+    font-size: 13px;
+}
