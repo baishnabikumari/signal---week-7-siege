@@ -83,3 +83,64 @@ function spawnWave(){
     const thickness = 12*(base/6000);
     state.waves.push({x,y,r: initialR, thickness, speed, born: performance.now(), ttl, caught:false});
 }
+
+//update
+function update(dt){
+    state.difficultyTimer += dt;
+    if(state.difficultyTimer > 10000 && state.spawnInterval > 500){
+        state.spawnInterval = Math.max(500, state.spawnInterval - 120);
+        state.difficultyTimer = 0;
+    }
+    state.spawnTimer += dt;
+    if(state.spawnTimer >= state.spawnInterval){
+        spawnWave();
+        state.spawnTimer = 0;
+    }
+// updated waves
+    for(let i = state.waves.length - 1; i>=0; i--){
+        const wv = state.waves[i];
+        wv.r += wv.speed * (dt/1000);
+        const age = performance.now() - wv.born;
+        if(age > wv.ttl){
+            if(!wv.caught) state.signalStrength -= 0.06;
+            state.waves.splice(i,1);
+            continue;
+        }
+        const sx = wv.x*canvas.clientWidth;
+        const sy = wv.y*canvas.clientHeight;
+        const px = player.x*canvas.clientWidth;
+        const py = player.y*canvas.clientHeight;
+        const dist = Math.hypot(px - sx, py - sy);
+        const ringEdge = Math.abs(dist - wv.r);
+        const tolerance = Math.max(10 * (Math.min(canvas.clientWidth, canvas.clientHeight)/600), wv.thickness * 0.9);
+        if(!wv.caught && ringEdge <= tolerance){
+            wv.caught = true;
+            const gain = Math.round(10 +(wv.speed / (Math.min(canvas.clientWidth, canvas.clientHeight)/600))*0.25);
+            state.score += gain;
+            state.signalStrength = clamp(state.signalStrength + 0.02, 0, 1);
+
+            //sound
+            if(state.soundOn) playTick();
+
+            //increased thickness for the short time
+            wv.thickness *= 1.5;
+        }
+    }
+    state.signalStrength -= 0.0003 * (dt/16);
+    state.signalStrength = clamp(state.signalStrength, 0, 1);
+
+    //use keyboard to move player more smoother
+    if(player.dx !== 0 && !pointerDown){
+        player.x += player.dx * 0.015 * 1.2;
+    }
+    player.x = clamp(player.x, 0.03, 0.97);
+
+    //UI update
+    scoreValue.textContent = state.score;
+    signalFillEl.style.transform = `scaleX(${state.signalStrength})`;
+
+    //game over ha ha ha ha
+    if(state.signalStrength <= 0 && state.running){
+        endGame();
+    }
+}
