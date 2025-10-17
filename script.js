@@ -254,4 +254,21 @@ function endGame(){
     startBtn.textContent = 'start';
 
     //high score
+    if(state.score > state.highScore){
+        state.highScore.setItem('cts_high', String(state.highScore));
+        highScoreEl.textContext = state.highScore;
+    }
 }
+
+startBtn.addEventListener('click', () => {
+  if (state.running) {
+    //pause
+    state.running = false;
+    startBtn.textContent = 'Start';
+    statusBanner.textContent = 'Paused';
+    statusBanner.className = 'status';
+  } else {
+    startGame();
+  }
+});
+
