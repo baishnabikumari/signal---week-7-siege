@@ -1,10 +1,10 @@
 const canvas = document.getElementById('gameCanvas');
-const scoreValue = document.getElementById('scoreValues');
-const highScoreEl = document.getelementById('highScore');
+const scoreValue = document.getElementById('scoreValue');   //correct id (singular)
+const highScoreEl = document.getElementById('highScore');   //capital G corrected
+const signalFillEl = document.getElementById('signalFill'); //consistent case
 const startBtn = document.getElementById('startBtn');
 const soundToggle = document.getElementById('soundToggle');
 const statusBanner = document.getElementById('statusBanner');
-const signalFillEl = document.getElementById('signalfill');
 const ssidInput = document.getElementById('ssidInput');
 
 const ctx = canvas.getContext('2d',{alpha: true});
@@ -38,10 +38,10 @@ function resizeCanvas(){
     W = Math.round(rect.width * DPR);
     H = Math.round(rect.height * DPR);
     canvas.width = W;
-    canvas.width = H;
+    canvas.height = H;
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
 }
-window.addEventListener('resize', ()=>{resizeCanvas(); });
+window.addEventListener('resize', resizeCanvas);
 
 
 // player
@@ -179,7 +179,7 @@ function draw(){
         ctx.shadowColor = 'rgba(180,107,255,0.16)';
         ctx.arc(sx, sy, r, 0, Math.PI*2);
         ctx.stroke();
-        ctx.shadowBlur();
+        ctx.shadowBlur = 0;
 
         if(wv.caught){
             ctx.beginPath();
@@ -257,8 +257,9 @@ function endGame(){
 
     //high score
     if(state.score > state.highScore){
-        state.highScore.setItem('cts_high', String(state.highScore));
-        highScoreEl.textContext = state.highScore;
+        state.highScore = state.score;
+        localStorage.setItem('cts_high', String(state.highScore));
+        highScoreEl.textContent = state.highScore;
     }
 }
 
@@ -286,25 +287,24 @@ function ensureAudio(){
     if(!audioCtx) audioCtx = new(window.AudioContext || window.webkitAudioContext());
 }
 
-function playTick(){
-    try{
-        ensureAudio();
-        const o = audioCtx.createOscillator();
-        const g = audioCtx.createGain();
-        o.type = 'sine';
-        o.frequency.value = 960;
-        o.gain.value = 0;
-        g.connect(g);
-        g.connect(audioCtx.destination);
-        const now = audioCtx.currentTime;
-        g.gain.setValueAtTime(0.0, now);
-        g.gain.linearRampToValueAtTime(0.08, now + 0.002);
-        o.start(now);
-        g.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
-        o.stop(now + 0.1);
-    }catch(e){
-        // ig audio will block until user gesture
-    }
+function playTick() {
+  try {
+    ensureAudio();
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = 'sine';
+    o.frequency.value = 960;
+    o.connect(g); //fixed that is to connect oscillator to gain node (was o.gain.value = 0)
+    g.connect(audioCtx.destination);
+    const now = audioCtx.currentTime;
+    g.gain.setValueAtTime(0.0, now);
+    g.gain.linearRampToValueAtTime(0.08, now + 0.002);
+    o.start(now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+    o.stop(now + 0.1);
+  } catch (e) {
+    console.warn('Audio play failed', e);
+  }
 }
 
 // initial setup
@@ -318,7 +318,8 @@ function init(){
     ssidInput.addEventListener('change', ()=> localStorage.setItem('cts_ssid', ssidInput.value || 'SIGNAL_NET'));
 
     // canvas for keyboard (focus)
-    canvas.addEventListener('click', ()=> canvas.focus());
+    canvas.setAttribute('tabindex', '0');
+    canvas.addEventListener('click', () => canvas.focus());
 
     //start paused
     statusBanner.textContent = 'Ready? - Press Start';
