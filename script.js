@@ -7,6 +7,8 @@ const soundToggle = document.getElementById('soundToggle');
 const statusBanner = document.getElementById('statusBanner');
 const ssidInput = document.getElementById('ssidInput');
 
+const restartBtn = document.getElementById('restartBtn');
+
 const ctx = canvas.getContext('2d',{alpha: true});
 
 let DPR = Math.max(1, window.devicePixelRatio || 1);
@@ -21,9 +23,15 @@ const state = {
     spawnTimer: 0,
     spawnInterval: 1400,
     difficultyTimer: 0,
-    highScore: parseInt(localStorage.getItem('cts_high') || '0', 10) || 0,
+    highScore: 0,
     soundOn: true
-}
+};
+
+// loads highscore 
+const savedHigh = localStorage.getItem('cts_high');
+if (savedHigh) state.highScore = parseInt(savedHigh, 10);
+highScoreEl.textContent = state.highScore;
+
 
 //saving high score 
 highScoreEl.textContent = state.highScore;
@@ -242,25 +250,34 @@ function startGame(){
     state.spawnInterval = 1200;
     state.spawnTimer = 0;
     state.difficultyTimer = 0;
+
     statusBanner.textContent = 'Running - catch signals!';
     statusBanner.className = 'status running';
 
     startBtn.textContent = 'Running...';
     startBtn.classList.add('primary');
+
+    restartBtn.classList.add('hidden');//hidden restart button when game starts
 }
 
 function endGame(){
     state.running = false;
-    statusBanner.textContent = 'Connection Lost - Score: ${state.score}';
+
+    statusBanner.textContent = `Connection Lost - Score: ${state.score}`;// sorry the old is not having blackticks so i added it now!
     statusBanner.className = 'status';
+
     startBtn.textContent = 'start';
+    startBtn.classList.remove('primary');
+
+    restartBtn.classList.remove('hidden');
 
     //high score
     if(state.score > state.highScore){
         state.highScore = state.score;
         localStorage.setItem('cts_high', String(state.highScore));
-        highScoreEl.textContent = state.highScore;
     }
+
+    highScoreEl.textContent = state.highScore;
 }
 
 startBtn.addEventListener('click', () => {
@@ -280,6 +297,8 @@ soundToggle.addEventListener('click', ()=> {
     state.soundOn = !state.soundOn;
     soundToggle.textContent = `Sound: ${state.soundOn ? 'On' : 'Off'}`;
 });
+
+restartBtn.addEventListener('click', startGame);
 
 //simple sound tick
 let audioCtx = null;

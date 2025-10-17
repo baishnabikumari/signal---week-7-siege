@@ -267,3 +267,23 @@ canvas#gameCanvas {
     .signal-bar{width: 120px; }
     .hud{inset: 12px; }
 }
+
+#restartBtn {
+    margin-top: 15px;
+    padding: 10px 25px;
+    border-radius: 12px;
+    background: linear-gradient(90deg, #b76eff, #6faaff);
+    color: white;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+#restartBtn:hover {
+    opacity: 0.85;
+    transform: scale(1.05);
+}
+
+.hidden {
+    display: none;
+}
