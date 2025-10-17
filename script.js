@@ -1,4 +1,4 @@
-const canvas = document.getElementsById('gameCanvas');
+const canvas = document.getElementById('gameCanvas');
 const scoreValue = document.getElementById('scoreValues');
 const highScoreEl = document.getelementById('highScore');
 const startBtn = document.getElementById('startBtn');
@@ -6,7 +6,8 @@ const soundToggle = document.getElementById('soundToggle');
 const statusBanner = document.getElementById('statusBanner');
 const signalFillEl = document.getElementById('signalfill');
 const ssidInput = document.getElementById('ssidInput');
-const ctx = canvas.getContext.getContext('2d',{alpha: true});
+
+const ctx = canvas.getContext('2d',{alpha: true});
 
 let DPR = Math.max(1, window.devicePixelRatio || 1);
 let W = 0, H = 0;
@@ -25,7 +26,7 @@ const state = {
 }
 
 //saving high score 
-highScoreEl.textContext = state.highScore;
+highScoreEl.textContent = state.highScore;
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const rand = (a,b) => Math.random()*(b-a)+a;
@@ -34,13 +35,11 @@ const rand = (a,b) => Math.random()*(b-a)+a;
 function resizeCanvas(){
     const rect = canvas.getBoundingClientRect();
     DPR = Math.max(1, window.devicePixelRatio || 1);
-    W = Math.round(rect.width*DPR);
-    H = Math.round(rect.width*DPR);
+    W = Math.round(rect.width * DPR);
+    H = Math.round(rect.height * DPR);
     canvas.width = W;
     canvas.width = H;
-    canvas.style.width = rect.width + 'px';
-    canvas.style.height = rect.height + 'px';
-    ctx.setTransform(DPR,0,0,DPR,0,0);
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
 }
 window.addEventListener('resize', ()=>{resizeCanvas(); });
 
@@ -60,7 +59,8 @@ function toNormX(clientX){
 }
 
 canvas.addEventListener('pointerdown', (e) => {
-    if(pointerDown) player.x = toNormX(e.clientX);
+    pointerDown = true;
+    player.x = toNormX(e.clientX);
 });
 window.addEventListener('pointermove', () => pointerDown = false);
 
@@ -74,13 +74,15 @@ window.addEventListener('keyup', (e) => {
 });
 
 //wave (pulsating signal)
-function spawnWave(){
+function spawnWave() {
     const margin = 0.08;
     const x = rand(margin, 1 - margin);
     const y = rand(0.15, 0.85);
     const base = Math.min(canvas.clientWidth, canvas.clientHeight);
-    const initialR = 8*(base/600);
-    const thickness = 12*(base/6000);
+    const initialR = 8 * (base/600);
+    const thickness = 12 * (base/600);
+    const speed = rand(50, 140);
+    const ttl = rand(1800, 4000);
     state.waves.push({x,y,r: initialR, thickness, speed, born: performance.now(), ttl, caught:false});
 }
 
@@ -272,3 +274,54 @@ startBtn.addEventListener('click', () => {
   }
 });
 
+//sound toggle
+soundToggle.addEventListener('click', ()=> {
+    state.soundOn = !state.soundOn;
+    soundToggle.textContent = `Sound: ${state.soundOn ? 'On' : 'Off'}`;
+});
+
+//simple sound tick
+let audioCtx = null;
+function ensureAudio(){
+    if(!audioCtx) audioCtx = new(window.AudioContext || window.webkitAudioContext());
+}
+
+function playTick(){
+    try{
+        ensureAudio();
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = 'sine';
+        o.frequency.value = 960;
+        o.gain.value = 0;
+        g.connect(g);
+        g.connect(audioCtx.destination);
+        const now = audioCtx.currentTime;
+        g.gain.setValueAtTime(0.0, now);
+        g.gain.linearRampToValueAtTime(0.08, now + 0.002);
+        o.start(now);
+        g.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+        o.stop(now + 0.1);
+    }catch(e){
+        // ig audio will block until user gesture
+    }
+}
+
+// initial setup
+function init(){
+    resizeCanvas();
+    window.requestAnimationFrame(loop);
+
+    // restore ssid
+    const stored = localStorage.getItem('cts_ssid');
+    if(stored) ssidInput.value = stored;
+    ssidInput.addEventListener('change', ()=> localStorage.setItem('cts_ssid', ssidInput.value || 'SIGNAL_NET'));
+
+    // canvas for keyboard (focus)
+    canvas.addEventListener('click', ()=> canvas.focus());
+
+    //start paused
+    statusBanner.textContent = 'Ready? - Press Start';
+}
+
+init();

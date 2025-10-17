@@ -54,6 +54,8 @@
             <div class="bottom-info">
                 <div class="hint">Use keys(← →) or touch pad/drag to move</div>
             </div>
+            <!-- canvas for actual gameplay rendering my bad-->
+            <canvas id="signalCanvas"></canvas>
         </main>
 
         <!-- ignore this its just to motivate myself-->
@@ -62,8 +64,7 @@
          </footer>
     </div>
 
-    <!--JavaS-->
-    <script type="module" src="script.js"></script>
-
+    <!--Javascript at the end so it loads DOM first-->
+    <script src="script.js"></script>
 </body>
 </html>
