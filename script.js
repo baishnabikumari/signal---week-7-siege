@@ -74,3 +74,12 @@ window.addEventListener('keyup', (e) => {
 });
 
 //wave (pulsating signal)
+function spawnWave(){
+    const margin = 0.08;
+    const x = rand(margin, 1 - margin);
+    const y = rand(0.15, 0.85);
+    const base = Math.min(canvas.clientWidth, canvas.clientHeight);
+    const initialR = 8*(base/600);
+    const thickness = 12*(base/6000);
+    state.waves.push({x,y,r: initialR, thickness, speed, born: performance.now(), ttl, caught:false});
+}
