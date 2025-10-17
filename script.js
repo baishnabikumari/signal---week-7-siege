@@ -126,6 +126,7 @@ function update(dt){
             wv.thickness *= 1.5;
         }
     }
+    //natural drain
     state.signalStrength -= 0.0003 * (dt/16);
     state.signalStrength = clamp(state.signalStrength, 0, 1);
 
@@ -143,4 +144,114 @@ function update(dt){
     if(state.signalStrength <= 0 && state.running){
         endGame();
     }
+}
+
+// rendering
+function draw(){
+    const cw = canvas.clientWidth;
+    const ch = canvas.clientHeight;
+    ctx.clearRect(0,0,cw,ch);
+
+    const g = ctx.createRadialGradient(cw*0.5, ch*0.4, cw*0.05, cw*0.5, ch*0.4, Math.max(cw,ch));
+    g.addColorStop(0, 'rgba(60,20,80,0.12)');
+    g.addColorStop(1, 'rgba(0,0,0,0.0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0,0,cw,ch);
+
+    //dwaing waves
+    ctx.globalCompositeOperation = 'Lighter';
+    for(const wv of state.waves){
+        const sx = wv.x * cw;
+        const sy = wv.y * ch;
+        const r = wv.r;
+        const grad = ctx.createRadialGradient(sx, sy, Math.max(1,r - wv.thickness*0.5), sx, sy, r + wv.thickness);
+        grad.addColorStop(0, 'rgba(91,227,255,0.00)');
+        grad.addColorStop(0.55, 'rgba(91,227,255,0.05)');
+        grad.addColorStop(0.75, 'rgba(180,107,255,0.12)');
+        grad.addColorStop(1, 'rgba(180,107,255,0.02)');
+
+        ctx.beginPath();
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = Math.max(2, wv.thickness);
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = 'rgba(180,107,255,0.16)';
+        ctx.arc(sx, sy, r, 0, Math.PI*2);
+        ctx.stroke();
+        ctx.shadowBlur();
+
+        if(wv.caught){
+            ctx.beginPath();
+            ctx.fillStyle = 'rgba(180,107,255,0.16)';
+            ctx.arc(sx, sy, Math.max(6, r*0.09), 0, Math.PI*2);
+            ctx.fill();
+        }
+    }
+    ctx.globalCompositeOperation = 'source-over';
+
+    const px = player.x * cw;
+    const py = player.y * ch;
+    const pr = Math.max(12, player.baseRadius * (Math.min(cw,ch)/600));
+
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(91,227,255,0.12';
+    ctx.lineWidth = 6;
+    ctx.shadowBlur = 30;
+    ctx.shadowColor = 'rgba(91,277,255,0.12)';
+    ctx.arc(px, py, pr * 1.6, 0, Math.PI*2);
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    const orbG = ctx.createRadialGradient(px - pr*0.3, py - pr*0.3, pr*0.1, px, py, pr*1.8);
+    orbG.addColorStop(0, 'rgba(255,255,255,0.95)');
+    orbG.addColorStop(0.08, 'rgba(180,107,255,0.95)');
+    orbG.addColorStop(0.45, 'rgba(91,227,255,0.9)');
+    orbG.addColorStop(1, 'rgba(30,10,40,0.06)');
+    ctx.fillStyle = orbG;
+    ctx.beginPath();
+    ctx.arc(px, py, pr, 0, Math.PI*2);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.arc(px - pr*0.25, py - pr*0.25, pr*0.28, 0, Math.PI*2);
+    ctx.fill();
+}
+
+// main loop form here now
+function loop(ts){
+    if(!state.lastTime) state.lastTime = ts;
+    const dt = ts - state.lastTime
+    state.lastTime = ts;
+
+    if(state.running){
+        update(dt);
+    }
+    draw();
+    requestAnimationFrame(loop);
+}
+
+// now controls - start and end
+function startGame(){
+    //for reset
+    state.running = true;
+    state.score = 0;
+    state.signalStrength = 1;
+    state.waves.length = 0;
+    state.spawnInterval = 1200;
+    state.spawnTimer = 0;
+    state.difficultyTimer = 0;
+    statusBanner.textContent = 'Running - catch signals!';
+    statusBanner.className = 'status running';
+
+    startBtn.textContent = 'Running...';
+    startBtn.classList.add('primary');
+}
+
+function endGame(){
+    state.running = false;
+    statusBanner.textContent = 'Connection Lost - Score: ${state.score}';
+    statusBanner.className = 'status';
+    startBtn.textContent = 'start';
+
+    //high score
 }
