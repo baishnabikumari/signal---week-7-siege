@@ -8,6 +8,7 @@ const statusBanner = document.getElementById('statusBanner');
 const ssidInput = document.getElementById('ssidInput');
 const playerEl = document.getElementById('player');
 const restartBtn = document.getElementById('restartBtn');
+const bgMusic = document.getElementById('bg-music');
 
 const ctx = canvas.getContext('2d',{alpha: true});
 
@@ -31,7 +32,6 @@ const state = {
 const savedHigh = localStorage.getItem('cts_high');
 if (savedHigh) state.highScore = parseInt(savedHigh, 10);
 highScoreEl.textContent = state.highScore;
-
 
 //saving high score 
 highScoreEl.textContent = state.highScore;
@@ -266,6 +266,10 @@ function startGame(){
     startBtn.classList.add('primary');
 
     restartBtn.classList.add('hidden');//hidden restart button when game starts
+
+    if (!isMusicOn) {
+        toggleMusic();
+    }
 }
 
 function endGame(){
@@ -333,6 +337,27 @@ function playTick() {
     console.warn('Audio play failed', e);
   }
 }
+
+let isMusicOn = false; // off by default
+function toggleMusic(){
+    if(isMusicOn) {
+        bgMusic.pause();
+        isMusicOn = false;
+        console.log("Music Paused");
+    } else {
+        bgMusic.volume = 0.3;
+        bgMusic.play();
+        isMusicOn = true;
+        console.log("Music is Playing Now!!");
+    }
+}
+
+//sound button
+soundToggle.addEventListener("click", () => {
+  toggleMusic();
+  soundToggle.textContent = isMusicOn ? "Sound- ON" : "Sound- OFF";
+});
+
 
 // initial setup
 function init(){
