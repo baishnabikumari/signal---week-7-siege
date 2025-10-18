@@ -6,7 +6,7 @@ const startBtn = document.getElementById('startBtn');
 const soundToggle = document.getElementById('soundToggle');
 const statusBanner = document.getElementById('statusBanner');
 const ssidInput = document.getElementById('ssidInput');
-
+const playerEl = document.getElementById('player');
 const restartBtn = document.getElementById('restartBtn');
 
 const ctx = canvas.getContext('2d',{alpha: true});
@@ -145,6 +145,25 @@ function update(dt){
         player.x += player.dx * 0.015 * 1.2;
     }
     player.x = clamp(player.x, 0.03, 0.97);
+    if (playerEl) {
+        const cw = canvas.clientWidth;
+        const ch = canvas.clientHeight;
+        const px = player.x * cw;
+        const py = player.y * ch;
+
+        playerEl.style.left = `${px - 30}px`;
+        playerEl.style.top = `${py - 30}px`;
+
+        if (player.dx < 0){
+            playerEl.classList.add('move-left');
+            playerEl.classList.remove('move-right');
+        } else if (player.dx > 0) {
+            playerEl.classList.add('move-right');
+            playerEl.classList.remove('move-left');
+        } else {
+            playerEl.classList.remove('move-left', 'move-right');
+        }
+    }
 
     //UI update
     scoreValue.textContent = state.score;
@@ -198,33 +217,22 @@ function draw(){
     }
     ctx.globalCompositeOperation = 'source-over';
 
+    // const px = player.x * cw;
+    // const py = player.y * ch;
+    // const pr = Math.max(12, player.baseRadius * (Math.min(cw,ch)/600));
+
+    // ctx.beginPath();
+    // ctx.strokeStyle = 'rgba(91,227,255,0.12';
+    // ctx.lineWidth = 6;
+    // ctx.shadowBlur = 30;
+    // ctx.shadowColor = 'rgba(91,277,255,0.12)';
+    // ctx.arc(px, py, pr * 1.6, 0, Math.PI*2);
+    // ctx.stroke();
+    // ctx.shadowBlur = 0;
+
     const px = player.x * cw;
     const py = player.y * ch;
-    const pr = Math.max(12, player.baseRadius * (Math.min(cw,ch)/600));
-
-    ctx.beginPath();
-    ctx.strokeStyle = 'rgba(91,227,255,0.12';
-    ctx.lineWidth = 6;
-    ctx.shadowBlur = 30;
-    ctx.shadowColor = 'rgba(91,277,255,0.12)';
-    ctx.arc(px, py, pr * 1.6, 0, Math.PI*2);
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-
-    const orbG = ctx.createRadialGradient(px - pr*0.3, py - pr*0.3, pr*0.1, px, py, pr*1.8);
-    orbG.addColorStop(0, 'rgba(255,255,255,0.95)');
-    orbG.addColorStop(0.08, 'rgba(180,107,255,0.95)');
-    orbG.addColorStop(0.45, 'rgba(91,227,255,0.9)');
-    orbG.addColorStop(1, 'rgba(30,10,40,0.06)');
-    ctx.fillStyle = orbG;
-    ctx.beginPath();
-    ctx.arc(px, py, pr, 0, Math.PI*2);
-    ctx.fill();
-
-    ctx.beginPath();
-    ctx.fillStyle = 'rgba(255,255,255,0.5)';
-    ctx.arc(px - pr*0.25, py - pr*0.25, pr*0.28, 0, Math.PI*2);
-    ctx.fill();
+    const pr = Math.max(12, player.baseRadius * (Math.min(cw, ch) / 600));
 }
 
 // main loop form here now

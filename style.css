@@ -11,7 +11,7 @@
     --panel-radius: 14px;
 }
 
-*{
+* {
     box-sizing: border-box;
 }
 html, body{
@@ -126,6 +126,7 @@ body{
     font-size: 13px;
 }
 
+/* main game */
 .stage{
     position: relative;
     flex: 1 1 auto;
@@ -286,4 +287,27 @@ canvas#gameCanvas {
 
 .hidden {
     display: none;
+}
+
+#player {
+    position: absolute;
+    width: 10%;
+    height: 130px;
+    left: 50%;
+    top: 70%;
+    transform: translate(-50%, -50%);
+    background-image: url('assets/player.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    image-rendering: crisp-edges;
+    transition: transform 0.1 ease;
+}
+
+#player.move-left {
+    transform: translate(-50%, -50%) rotate(-6deg);
+}
+
+#player.move-right {
+    transform: translate(-50%, -50%) rotate(6deg);
 }
