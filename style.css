@@ -2,12 +2,12 @@
 
 /*var*/
 :root{
-    --bg-1: #050213;
-    --bg-2: #0b0520;
-    --accent-a: #5be3ff;
-    --accent-b: #b46bff;
-    --muted: #aeb9e8;
-    --glass: rgba(255,255,255,0.03);
+    --bg-1: #0f0f17;
+    --bg-2: #120000;
+    --accent-a: #5e5c5c;
+    --accent-b: #e2e3e6;
+    --muted: #0b0b0b;
+    --glass: rgba(215, 215, 215, 0.836);
     --panel-radius: 14px;
 }
 
@@ -20,19 +20,23 @@ html, body{
     font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
 }
 
-body{
-    background:
-    radial-gradient(800px 400px at 12% 18%, rgba(180,107,255,0.06), transparent 8%),
-    radial-gradient(700px 350px at 90% 88%, rgba(91,227,255,0.04), transparent 6%),
-    linear-gradient(180deg,var(--bg-1),var(--bg-2));
+body {
+  background:
+    linear-gradient(180deg, rgba(5, 0, 10, 0), rgba(0, 0, 0, 0)),
+    url('assets/siege-background.jpg');
 
-    color: #e9e7ff;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+
+    color: #010009;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     display: flex;
     align-items: stretch;
     justify-content: center;
-    padding: 18px;
+    padding: 10px;
 }
 
 /*layout for app*/
@@ -136,8 +140,18 @@ body{
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 20px 60px rgba(2,2,8,0.6);
-    background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.06));
+
+    background: radial-gradient(
+    circle at center,
+    rgba(90, 70, 130, 0.18) 0%,
+    rgba(20, 15, 40, 0.32) 60%,
+    rgba(10, 5, 20, 0.45) 100%
+);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    background-clip: padding-box;
+
+    box-shadow: inset 0 0 30px rgba(255,255,255,0.03), 0 20px 60px rgba(3, 3, 6, 0.8);
 }
 
 /*Now canvas that is occuping all the stage*/
@@ -209,7 +223,7 @@ canvas#gameCanvas {
     transform-origin: left center;
     transform: scaleX(1);
     transition: transform .2s linear;
-    box-shadow: 0 8px 24px rgba(180,107,255,0.08);
+    box-shadow: 0 8px 24px rgb(213, 183, 243);
 }
 
 /* status bar or banner*/
@@ -218,7 +232,7 @@ canvas#gameCanvas {
     padding: 8px 12px;
     border-radius: 12px;
     color: var(--muted);
-    box-shadow: 0 8px 30px rgba(6,6,10,0.06);
+    box-shadow: 0 8px 30px rgb(32, 32, 41);
     font-weight: 600;
 }
 
@@ -273,8 +287,8 @@ canvas#gameCanvas {
     margin-top: 15px;
     padding: 10px 25px;
     border-radius: 12px;
-    background: linear-gradient(90deg, #b76eff, #6faaff);
-    color: white;
+    background: linear-gradient(90deg, #d7a064, #b36403);
+    color: rgb(80, 1, 1);
     font-weight: 600;
     border: none;
     cursor: pointer;

@@ -194,16 +194,16 @@ function draw(){
         const sy = wv.y * ch;
         const r = wv.r;
         const grad = ctx.createRadialGradient(sx, sy, Math.max(1,r - wv.thickness*0.5), sx, sy, r + wv.thickness);
-        grad.addColorStop(0, 'rgba(91,227,255,0.00)');
-        grad.addColorStop(0.55, 'rgba(91,227,255,0.05)');
-        grad.addColorStop(0.75, 'rgba(180,107,255,0.12)');
-        grad.addColorStop(1, 'rgba(180,107,255,0.02)');
+        grad.addColorStop(0, 'rgba(0,227,255,0.0)');
+        grad.addColorStop(0.55, 'rgba(0, 225, 255, 1)');
+        grad.addColorStop(0.75, 'rgba(52, 6, 98, 1)');
+        grad.addColorStop(1, 'rgba(255, 0, 212, 0.49)');
 
         ctx.beginPath();
         ctx.strokeStyle = grad;
         ctx.lineWidth = Math.max(2, wv.thickness);
-        ctx.shadowBlur = 20;
-        ctx.shadowColor = 'rgba(180,107,255,0.16)';
+        ctx.shadowBlur = 30;
+        ctx.shadowColor = 'rgba(200,150,255,0.6)';
         ctx.arc(sx, sy, r, 0, Math.PI*2);
         ctx.stroke();
         ctx.shadowBlur = 0;
