@@ -39,16 +39,30 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const rand = (a,b) => Math.random()*(b-a)+a;
 
 //resize
-function resizeCanvas(){
-    const rect = canvas.getBoundingClientRect();
-    DPR = Math.max(1, window.devicePixelRatio || 1);
-    W = Math.round(rect.width * DPR);
-    H = Math.round(rect.height * DPR);
+function resizeCanvas() {
+    const stage = document.getElementById('stage');
+    const rect = stage.getBoundingClientRect();
+
+    const DPR = Math.max(1, window.devicePixelRatio || 1);
+    const W = Math.round(rect.width * DPR);
+    const H = Math.round(rect.height * DPR);
+
     canvas.width = W;
     canvas.height = H;
-    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+
+    canvas.style.width = rect.width + "px";
+    canvas.style.height = rect.height + "px";
+
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(DPR, DPR);
+
+    ctx.imageSmoothingEnabled = true;
+
+    ctx.clearRect(0, 0, W / DPR, H / DPR);
 }
 window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
 
 
 // player
@@ -117,7 +131,7 @@ function triggerWarning() {
     if (!countdownEl) {
         countdownEl = document.createElement('div');
         countdownEl.className = 'countdown';
-        document.querySelector('.stage').appendChild(countdownEl);
+        document.getElementById('stage').appendChild(countdownEl);
     }
     countdownEl.textContent = countdown;
     warningImg.classList.add('show');
@@ -171,64 +185,69 @@ function update(dt){
         spawnWave();
         state.spawnTimer = 0;
     }
-// updated waves
-    for(let i = state.waves.length - 1; i>=0; i--){
+
+    // updated waves
+    for(let i = state.waves.length - 1; i >= 0; i--){
         const wv = state.waves[i];
-        wv.r += wv.speed * (dt/1000);
+        wv.r += wv.speed * (dt / 1000);
         const age = performance.now() - wv.born;
         if(age > wv.ttl){
             if(!wv.caught) state.signalStrength -= 0.06;
-            state.waves.splice(i,1);
+            state.waves.splice(i, 1);
             continue;
         }
-        const sx = wv.x*canvas.clientWidth;
-        const sy = wv.y*canvas.clientHeight;
-        const px = player.x*canvas.clientWidth;
-        const py = player.y*canvas.clientHeight;
+        const sx = wv.x * canvas.clientWidth;
+        const sy = wv.y * canvas.clientHeight;
+        const px = player.x * canvas.clientWidth;
+        const py = player.y * canvas.clientHeight;
         const dist = Math.hypot(px - sx, py - sy);
         const ringEdge = Math.abs(dist - wv.r);
-        const tolerance = Math.max(10 * (Math.min(canvas.clientWidth, canvas.clientHeight)/600), wv.thickness * 0.9);
+        const tolerance = Math.max(10 * (Math.min(canvas.clientWidth, canvas.clientHeight) / 600), wv.thickness * 0.9);
         if(!wv.caught && ringEdge <= tolerance){
             wv.caught = true;
-            const gain = Math.round(10 +(wv.speed / (Math.min(canvas.clientWidth, canvas.clientHeight)/600))*0.25);
+            const gain = Math.round(10 + (wv.speed / (Math.min(canvas.clientWidth, canvas.clientHeight) / 600)) * 0.25);
             state.score += gain;
             state.signalStrength = clamp(state.signalStrength + 0.02, 0, 1);
 
-            //sound
             if(state.soundOn) playTick();
 
-            //increased thickness for the short time
             wv.thickness *= 1.5;
         }
     }
+
     //natural drain
-    state.signalStrength -= 0.0003 * (dt/16);
+    state.signalStrength -= 0.0003 * (dt / 16);
     state.signalStrength = clamp(state.signalStrength, 0, 1);
 
-    //use keyboard to move player more smoother
+    //use keyboard to move player more smoother thanit was before
     if(player.dx !== 0 && !pointerDown){
         player.x += player.dx * 0.015 * 1.2;
     }
-    player.x = clamp(player.x, -0.1, 1.1);
-    player.y = clamp(player.y, 0, 1);
+
+    const cw = canvas.clientWidth;
+    const ch = canvas.clientHeight;
+    const playerRadiusX = (playerEl.offsetWidth / 2) / cw;
+    const playerRadiusY = (playerEl.offsetHeight / 2) / ch;
+
+    player.x = clamp(player.x, playerRadiusX, 1 - playerRadiusX);
+    player.y = clamp(player.y, playerRadiusY, 1 - playerRadiusY);
+
     if (playerEl) {
-        const cw = canvas.clientWidth;
-        const ch = canvas.clientHeight;
         const px = player.x * cw;
         const py = player.y * ch;
 
-        playerEl.style.left = `${px - 30}px`;
-        playerEl.style.top = `${py - 30}px`;
+        playerEl.style.left = `${px - playerEl.offsetWidth / 2}px`;
+        playerEl.style.top = `${py - playerEl.offsetHeight / 2}px`;
+    }
 
-        if (player.dx < 0){
-            playerEl.classList.add('move-left');
-            playerEl.classList.remove('move-right');
-        } else if (player.dx > 0) {
-            playerEl.classList.add('move-right');
-            playerEl.classList.remove('move-left');
-        } else {
-            playerEl.classList.remove('move-left', 'move-right');
-        }
+    if (player.dx < 0){
+        playerEl.classList.add('move-left');
+        playerEl.classList.remove('move-right');
+    } else if (player.dx > 0) {
+        playerEl.classList.add('move-right');
+        playerEl.classList.remove('move-left');
+    } else {
+        playerEl.classList.remove('move-left', 'move-right');
     }
 
     //UI update
@@ -244,59 +263,52 @@ function update(dt){
 }
 
 // rendering
-function draw(){
+function draw() {
     const cw = canvas.clientWidth;
     const ch = canvas.clientHeight;
-    ctx.clearRect(0,0,cw,ch);
 
-    const g = ctx.createRadialGradient(cw*0.5, ch*0.4, cw*0.05, cw*0.5, ch*0.4, Math.max(cw,ch));
+    ctx.clearRect(0, 0, cw, ch);
+
+    const g = ctx.createRadialGradient(cw * 0.5, ch * 0.4, cw * 0.05, cw * 0.5, ch * 0.4, Math.max(cw, ch));
     g.addColorStop(0, 'rgba(60,20,80,0.12)');
     g.addColorStop(1, 'rgba(0,0,0,0.0)');
     ctx.fillStyle = g;
-    ctx.fillRect(0,0,cw,ch);
+    ctx.fillRect(0, 0, cw, ch);
 
-    //dwaing waves
-    ctx.globalCompositeOperation = 'Lighter';
-    for(const wv of state.waves){
+    ctx.globalCompositeOperation = 'lighter';
+    for (const wv of state.waves) {
         const sx = wv.x * cw;
         const sy = wv.y * ch;
         const r = wv.r;
-        const grad = ctx.createRadialGradient(sx, sy, Math.max(1,r - wv.thickness*0.5), sx, sy, r + wv.thickness);
+        const grad = ctx.createRadialGradient(
+            sx, sy,
+            Math.max(1, r - wv.thickness * 0.5),
+            sx, sy,
+            r + wv.thickness
+        );
+
         grad.addColorStop(0, 'rgba(0,227,255,0.0)');
-        grad.addColorStop(0.55, 'rgba(0, 225, 255, 1)');
-        grad.addColorStop(0.75, 'rgba(52, 6, 98, 1)');
-        grad.addColorStop(1, 'rgba(255, 0, 212, 0.49)');
+        grad.addColorStop(0.55, 'rgba(0,225,255,1)');
+        grad.addColorStop(0.75, 'rgba(52,6,98,1)');
+        grad.addColorStop(1, 'rgba(255,0,212,0.49)');
 
         ctx.beginPath();
         ctx.strokeStyle = grad;
         ctx.lineWidth = Math.max(2, wv.thickness);
         ctx.shadowBlur = 30;
         ctx.shadowColor = 'rgba(200,150,255,0.6)';
-        ctx.arc(sx, sy, r, 0, Math.PI*2);
+        ctx.arc(sx, sy, r, 0, Math.PI * 2);
         ctx.stroke();
         ctx.shadowBlur = 0;
 
-        if(wv.caught){
+        if (wv.caught) {
             ctx.beginPath();
             ctx.fillStyle = 'rgba(180,107,255,0.16)';
-            ctx.arc(sx, sy, Math.max(6, r*0.09), 0, Math.PI*2);
+            ctx.arc(sx, sy, Math.max(6, r * 0.09), 0, Math.PI * 2);
             ctx.fill();
         }
     }
     ctx.globalCompositeOperation = 'source-over';
-
-    // const px = player.x * cw;
-    // const py = player.y * ch;
-    // const pr = Math.max(12, player.baseRadius * (Math.min(cw,ch)/600));
-
-    // ctx.beginPath();
-    // ctx.strokeStyle = 'rgba(91,227,255,0.12';
-    // ctx.lineWidth = 6;
-    // ctx.shadowBlur = 30;
-    // ctx.shadowColor = 'rgba(91,277,255,0.12)';
-    // ctx.arc(px, py, pr * 1.6, 0, Math.PI*2);
-    // ctx.stroke();
-    // ctx.shadowBlur = 0;
 
     const px = player.x * cw;
     const py = player.y * ch;
@@ -318,6 +330,16 @@ function loop(ts){
 
 // now controls - start and end
 function startGame(){
+    cancelWarning();
+    warningTimer = null;
+    clearInterval(countdownInterval);
+    if (countdownEl) countdownEl.textContent = '';
+    if (explosionImg) explosionImg.classList.remove('show');
+
+    player.x = 0.5;
+    player.y = 0.78;
+    player.dx = 0;
+    pointerDown = false;
     //for reset
     state.running = true;
     state.score = 0;
@@ -332,12 +354,16 @@ function startGame(){
 
     startBtn.textContent = 'Running...';
     startBtn.classList.add('primary');
-
     restartBtn.classList.add('hidden');//hidden restart button when game starts
 
     if (!isMusicOn) {
         toggleMusic();
     }
+
+    const cw = canvas.clientWidth;
+    const ch = canvas.clientHeight;
+    playerEl.style.left = `${player.x * cw - 30}px`;
+    playerEl.style.top = `${player.y * ch - 30}px`;
 }
 
 function endGame(){
@@ -446,4 +472,4 @@ function init(){
     statusBanner.textContent = 'Ready? - Press Start';
 }
 
-init();
+window.addEventListener("DOMContentLoaded", init);
