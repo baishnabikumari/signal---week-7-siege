@@ -206,11 +206,13 @@ canvas#gameCanvas {
 }
 
 .score-panel, .signal-panel{
-    background: var(--glass);
+    background: linear-gradient(90deg, #d7a064, #b36403);
+    color: (rgb(80, 1, 1));
+    font-weight: 600;
     padding: 10px 14px;
     border-radius: var(--panel-radius);
-    backdrop-filter: blur(6px);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    text-shadow: none;
 }
 
 .label{
@@ -239,42 +241,57 @@ canvas#gameCanvas {
 .signal-bar{
     width: 220px;
     height: 10px;
-    background: rgba(255,255,255,0.03);
+    background: linear-gradient(90deg, #8c3900, #b36403);
     border-radius: 999px;
     overflow: hidden;
     margin-top: 8px;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 4);
 }
 
 .signal-fill{
     height: 100%;
     width: 100%;
-    background: linear-gradient(90deg,var(--accent-a),var(--accent-b));
+    background: linear-gradient(90deg, #8c3900, #b36403);
     transform-origin: left center;
     transform: scaleX(1);
-    transition: transform .2s linear;
-    box-shadow: 0 8px 24px rgb(213, 183, 243);
+    transition: transform 0.2s linear;
+    box-shadow: 0 8px 24px rgba(255, 195, 100, 0.6);
 }
 
 /* status bar or banner*/
 .status{
-    background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    padding: 8px 12px;
+    background: linear-gradient(90deg, #d7a064, #b36403);
+    color: rgb(80, 1, 1);
+    font-weight: 700;
     border-radius: 12px;
-    color: var(--muted);
-    box-shadow: 0 8px 30px rgb(32, 32, 41);
-    font-weight: 600;
+    padding: 10px 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    display: inline-block;
 }
 
-.status.ready{
-    color: var(--muted);
+#statusBanner {
+    background: linear-gradient(90deg, #d7a064, #b36403);
+    color: rgb(80, 1, 1);
+    font-weight: 700;
+    border-radius: 12px;
+    padding: 10px 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    text-align: center;
+    width: fit-content;
+    margin: 10px auto;
+    display: inline-block;
+}
+.status:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
 }
 
-.status.running{
-    color: #e7fff9;
-}
-
-.status.success{
-    color: var(--accent-a);
+.status.ready,
+.status.running,
+.status.success,
+.status.error {
+    background: linear-gradient(90deg, #d7a064, #b36403);
+    color: rgb(80, 1, 1);
 }
 
 /*bottom information*/

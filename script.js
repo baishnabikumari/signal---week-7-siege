@@ -193,7 +193,7 @@ function update(dt){
         const age = performance.now() - wv.born;
         if(age > wv.ttl){
             if(!wv.caught) state.signalStrength -= 0.06;
-            state.waves.splice(i, 1);
+            state.waves.splice(i,1);
             continue;
         }
         const sx = wv.x * canvas.clientWidth;
@@ -229,8 +229,9 @@ function update(dt){
     const playerRadiusX = (playerEl.offsetWidth / 2) / cw;
     const playerRadiusY = (playerEl.offsetHeight / 2) / ch;
 
-    player.x = clamp(player.x, playerRadiusX, 1 - playerRadiusX);
-    player.y = clamp(player.y, playerRadiusY, 1 - playerRadiusY);
+    const margin = 0.05;
+    player.x = clamp(player.x, -margin, 1 + margin);
+    player.y = clamp(player.y, -margin, 1 + margin);
 
     if (playerEl) {
         const px = player.x * cw;
