@@ -31,7 +31,6 @@ const state = {
 // loads highscore 
 const savedHigh = localStorage.getItem('cts_high');
 if (savedHigh) state.highScore = parseInt(savedHigh, 10);
-highScoreEl.textContent = state.highScore;
 
 //saving high score 
 highScoreEl.textContent = state.highScore;
@@ -70,7 +69,9 @@ canvas.addEventListener('pointerdown', (e) => {
     pointerDown = true;
     player.x = toNormX(e.clientX);
 });
-window.addEventListener('pointermove', () => pointerDown = false);
+window.addEventListener('pointermove', (e) => {
+    if (pointerDown) player.x = toNormX(e.clientX);
+});
 
 //for keyboard
 window.addEventListener('keydown', (e) => {
@@ -92,6 +93,70 @@ function spawnWave() {
     const speed = rand(50, 140);
     const ttl = rand(1800, 4000);
     state.waves.push({x,y,r: initialR, thickness, speed, born: performance.now(), ttl, caught:false});
+}
+
+
+//warning and explosion code
+let warningTimer = null;
+let countdownInterval = null;
+let countdownEl = null;
+const warningImg = document.getElementById('warningImg');
+const explosionImg = document.getElementById('explosionImg');
+
+function checkPlayerBoundary(){
+    const margin = 0.02;
+    if (player.x < margin || player.x > 1 - margin || player.y < 0.1 || player.y > 0.9) {
+        if (!warningTimer) triggerWarning();
+    } else {
+        cancelWarning();
+    }
+}
+
+function triggerWarning() {
+    let countdown = 5;
+    if (!countdownEl) {
+        countdownEl = document.createElement('div');
+        countdownEl.className = 'countdown';
+        document.querySelector('.stage').appendChild(countdownEl);
+    }
+    countdownEl.textContent = countdown;
+    warningImg.classList.add('show');
+
+    countdownInterval = setInterval(() => {
+        countdown--;
+        countdownEl.textContent = countdown;
+        if (countdown <= 0) {
+            clearInterval(countdownInterval);
+            triggerExplosion();
+        }
+    }, 1000);
+    warningTimer = true;
+}
+
+function cancelWarning() {
+    if (warningTimer) {
+        warningImg.classList.remove('show');
+        if(countdownEl) countdownEl.textContent = '';
+        clearInterval(countdownInterval);
+        warningTimer = null;
+    }
+}
+
+function triggerExplosion() {
+    cancelWarning();
+    explosionImg.classList.add('show');
+
+    try {
+        const boom = new Audio('assets/explosion.mp3');
+        boom.volume = 0.8;
+        boom.play();
+    } catch (err) {
+        console.warn("Explosion sound failed", err);
+    }
+    setTimeout(() => {
+        explosionImg.classList.remove('show');
+        endGame();
+    }, 1200);
 }
 
 //update
@@ -144,7 +209,8 @@ function update(dt){
     if(player.dx !== 0 && !pointerDown){
         player.x += player.dx * 0.015 * 1.2;
     }
-    player.x = clamp(player.x, 0.03, 0.97);
+    player.x = clamp(player.x, -0.1, 1.1);
+    player.y = clamp(player.y, 0, 1);
     if (playerEl) {
         const cw = canvas.clientWidth;
         const ch = canvas.clientHeight;
@@ -168,6 +234,8 @@ function update(dt){
     //UI update
     scoreValue.textContent = state.score;
     signalFillEl.style.transform = `scaleX(${state.signalStrength})`;
+
+    checkPlayerBoundary();
 
     //game over ha ha ha ha
     if(state.signalStrength <= 0 && state.running){
@@ -302,12 +370,6 @@ startBtn.addEventListener('click', () => {
   } else {
     startGame();
   }
-});
-
-//sound toggle
-soundToggle.addEventListener('click', ()=> {
-    state.soundOn = !state.soundOn;
-    soundToggle.textContent = `Sound: ${state.soundOn ? 'On' : 'Off'}`;
 });
 
 restartBtn.addEventListener('click', startGame);

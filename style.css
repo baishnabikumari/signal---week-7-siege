@@ -325,3 +325,31 @@ canvas#gameCanvas {
 #player.move-right {
     transform: translate(-50%, -50%) rotate(6deg);
 }
+
+#warningImg, #explosionImg{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 200px;
+    height: auto;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.3 ease;
+    pointer-events: none;
+}
+#warningImg.show, #explosionImg.show {
+    opacity: 1;
+}
+
+.countdown {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 60px;
+    color: #ff3c3c;
+    font-weight: 900;
+    text-shadow: 0 0 20px #ff0000;
+    z-index: 11;
+}
