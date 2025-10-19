@@ -353,3 +353,31 @@ canvas#gameCanvas {
     text-shadow: 0 0 20px #ff0000;
     z-index: 11;
 }
+
+#startBtn,
+#soundToggle,
+#restartBtn {
+    background: linear-gradient(90deg, #d7a064, #b36403);
+    color: rgb(80, 1, 1);
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 25px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+#startBtn:hover,
+#soundToggle:hover,
+#restartBtn:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+}
+
+#startBtn:active,
+#soundToggle:active,
+#restartBtn:active {
+    transform: scale(0.96);
+    opacity: 0.85;
+}

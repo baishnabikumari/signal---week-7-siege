@@ -343,6 +343,13 @@ function startGame(){
 function endGame(){
     state.running = false;
 
+    //music pause if the game is over
+    if (isMusicOn) {
+        bgMusic.pause();
+        isMusicOn = false;
+        soundToggle.textContent = "Sound- OFF";
+    }
+
     statusBanner.textContent = `Connection Lost - Score: ${state.score}`;// sorry the old is not having blackticks so i added it now!
     statusBanner.className = 'status';
 
